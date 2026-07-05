@@ -4,8 +4,10 @@ test.describe('Frontend', () => {
   let page: Page
 
   test.beforeAll(async ({ browser }, testInfo) => {
+    console.log(testInfo)
     const context = await browser.newContext()
     page = await context.newPage()
+    console.log(page)
   })
 
   test('can go on homepage', async ({ page }) => {
