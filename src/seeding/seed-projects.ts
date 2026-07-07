@@ -1,4 +1,4 @@
-//seed-projects.ts
+//src\seeding\seed-projects.ts
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 
