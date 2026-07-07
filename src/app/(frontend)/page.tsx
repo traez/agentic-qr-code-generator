@@ -1,7 +1,7 @@
 import { headers as getHeaders } from 'next/headers.js'
 import Image from 'next/image'
 import { getPayload } from 'payload'
-import React from 'react'
+import ProjectsGallery from '@/components/ProjectsGallery'
 import { fileURLToPath } from 'url'
 
 import config from '@/payload.config'
@@ -17,6 +17,7 @@ export default async function HomePage() {
 
   return (
     <div className="home">
+      <ProjectsGallery />
       <div className="content">
         <picture>
           <source srcSet="https://raw.githubusercontent.com/payloadcms/payload/3.x/packages/ui/src/assets/payload-favicon.svg" />
