@@ -1,3 +1,4 @@
+//src\collections\Projects.ts
 import type { CollectionConfig } from 'payload'
 
 export const Projects: CollectionConfig = {

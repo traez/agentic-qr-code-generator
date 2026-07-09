@@ -1,3 +1,4 @@
+//src\components\ProjectsGallery.tsx
 'use client'
 import type { Project } from '@/payload-types'
 

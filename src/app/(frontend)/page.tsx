@@ -1,3 +1,4 @@
+//src\app\(frontend)\page.tsx
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import ProjectsGallery from '@/components/ProjectsGallery'
