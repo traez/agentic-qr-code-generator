@@ -5,11 +5,18 @@ export const Projects: CollectionConfig = {
   slug: 'projects',
   admin: {
     useAsTitle: 'name',
+    defaultColumns: ['serialNumber', 'name', 'description', 'status'],
   },
   access: {
     read: () => true,
   },
   fields: [
+    {
+      name: 'serialNumber',
+      type: 'text',
+      required: true,
+      defaultValue: 'TEMP-SERIAL',
+    },
     {
       name: 'name',
       type: 'text',

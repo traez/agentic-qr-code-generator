@@ -169,6 +169,7 @@ export interface Media {
  */
 export interface Project {
   id: number;
+  serialNumber: string;
   name: string;
   description?: string | null;
   status?: ('draft' | 'published' | 'archived') | null;
@@ -307,6 +308,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "projects_select".
  */
 export interface ProjectsSelect<T extends boolean = true> {
+  serialNumber?: T;
   name?: T;
   description?: T;
   status?: T;

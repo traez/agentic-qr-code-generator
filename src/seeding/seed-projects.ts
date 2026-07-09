@@ -1,4 +1,4 @@
-//src\seeding\seed-projects.ts
+/* //src\seeding\seed-projects.ts
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 
@@ -38,4 +38,4 @@ for (const project of projects) {
 }
 
 console.log('Seeding complete!')
-process.exit(0)
+process.exit(0) */
