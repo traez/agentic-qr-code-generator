@@ -5,7 +5,7 @@ export const Projects: CollectionConfig = {
   slug: 'projects',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['serialNumber', 'name', 'description', 'status'],
+    defaultColumns: ['serialNumber', 'name', 'description'],
   },
   access: {
     read: () => true,
@@ -25,12 +25,6 @@ export const Projects: CollectionConfig = {
     {
       name: 'description',
       type: 'textarea',
-    },
-    {
-      name: 'status',
-      type: 'select',
-      options: ['draft', 'published', 'archived'],
-      defaultValue: 'draft',
     },
     {
       name: 'metadata',

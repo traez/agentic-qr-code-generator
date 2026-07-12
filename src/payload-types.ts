@@ -172,7 +172,6 @@ export interface Project {
   serialNumber: string;
   name: string;
   description?: string | null;
-  status?: ('draft' | 'published' | 'archived') | null;
   metadata?:
     | {
         [k: string]: unknown;
@@ -311,7 +310,6 @@ export interface ProjectsSelect<T extends boolean = true> {
   serialNumber?: T;
   name?: T;
   description?: T;
-  status?: T;
   metadata?: T;
   updatedAt?: T;
   createdAt?: T;

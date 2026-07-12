@@ -60,7 +60,7 @@ async function updateSerialNumbers() {
   process.exit(0)
 }
 
-updateSerialNumbers().catch((error) => {
+await updateSerialNumbers().catch((error) => {
   console.error('Update failed:', error)
   process.exit(1)
 })

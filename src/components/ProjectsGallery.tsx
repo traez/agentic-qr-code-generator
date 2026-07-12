@@ -12,9 +12,7 @@ const ProjectsGallery = ({ projects }: ProjectsGalleryProps) => {
       <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
         <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-2xl md:text-4xl font-bold text-foreground">
-              Projects Gallery
-            </h2>
+            <h2 className="text-2xl md:text-4xl font-bold text-foreground">Projects Gallery</h2>
             <p className="text-base text-muted-foreground mt-1 md:max-w-[800px]">
               Browse through your saved QR code projects.
             </p>
@@ -44,24 +42,21 @@ const ProjectsGallery = ({ projects }: ProjectsGalleryProps) => {
                 >
                   <h3 className="font-semibold text-foreground">{project.name}</h3>
                   {project.description && (
-                    <p className="text-sm text-muted-foreground">
-                      {project.description}
+                    <p className="text-sm text-muted-foreground">{project.description}</p>
+                  )}
+                  {project.serialNumber && (
+                    <p className="text-xs text-muted-foreground">
+                      {project.serialNumber}
                     </p>
                   )}
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground self-start capitalize w-fit">
-                    {project.status ?? 'draft'}
-                  </span>
                   {meta && (
                     <div className="text-xs text-muted-foreground space-y-1 mt-auto">
                       <div>
-                        <span className="font-medium">Version:</span>{' '}
-                        {String(version ?? '—')}
+                        <span className="font-medium">Version:</span> {String(version ?? '—')}
                       </div>
                       <div>
                         <span className="font-medium">Tech Stack:</span>{' '}
-                        {Array.isArray(techStack)
-                          ? techStack.join(', ')
-                          : String(techStack ?? '—')}
+                        {Array.isArray(techStack) ? techStack.join(', ') : String(techStack ?? '—')}
                       </div>
                     </div>
                   )}
