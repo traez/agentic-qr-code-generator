@@ -70,6 +70,7 @@ export interface Config {
     users: User;
     media: Media;
     projects: Project;
+    'qr-codes': QrCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -80,6 +81,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    'qr-codes': QrCodesSelect<false> | QrCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -190,6 +192,27 @@ export interface Project {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "qr-codes".
+ */
+export interface QrCode {
+  id: number;
+  shareId?: string | null;
+  inputText: string;
+  style?: {
+    foregroundColor?: string | null;
+    backgroundColor?: string | null;
+    dotStyle?: ('square' | 'rounded' | 'diamond') | null;
+  };
+  errorCorrectionLevel?: ('L' | 'M' | 'Q' | 'H') | null;
+  transparentBackground?: boolean | null;
+  logo?: (number | null) | Media;
+  exportPng?: (number | null) | Media;
+  exportSvg?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -223,6 +246,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'projects';
         value: number | Project;
+      } | null)
+    | ({
+        relationTo: 'qr-codes';
+        value: number | QrCode;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -316,6 +343,28 @@ export interface ProjectsSelect<T extends boolean = true> {
   name?: T;
   description?: T;
   metadata?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "qr-codes_select".
+ */
+export interface QrCodesSelect<T extends boolean = true> {
+  shareId?: T;
+  inputText?: T;
+  style?:
+    | T
+    | {
+        foregroundColor?: T;
+        backgroundColor?: T;
+        dotStyle?: T;
+      };
+  errorCorrectionLevel?: T;
+  transparentBackground?: T;
+  logo?: T;
+  exportPng?: T;
+  exportSvg?: T;
   updatedAt?: T;
   createdAt?: T;
 }
