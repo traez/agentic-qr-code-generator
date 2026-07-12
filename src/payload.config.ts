@@ -15,6 +15,7 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
+    autoRefresh: true, // stay logged in indefinitely while browser is open and on admin panel, by automatically refreshing auth token before it expires
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
@@ -32,6 +33,12 @@ export default buildConfig({
     },
   }),
   sharp,
+  upload: {
+    limits: {
+      fileSize: 2 * 1024 * 1024, // 2 MB
+    },
+    abortOnLimit: true, // immediately reject oversize files
+  },
   plugins: [
     s3Storage({
       collections: {

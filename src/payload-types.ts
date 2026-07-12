@@ -150,7 +150,11 @@ export interface User {
  */
 export interface Media {
   id: number;
+  /**
+   * Upload a file with lowercase letters, numbers, and hyphens only. Max 50 characters.
+   */
   alt: string;
+  kind: 'logo' | 'qr-png' | 'qr-svg';
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -290,6 +294,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  kind?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

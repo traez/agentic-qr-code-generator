@@ -1,4 +1,4 @@
-// src\seeding\update-serial-numbers.ts
+/* // src\seeding\update-serial-numbers.ts
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 
@@ -64,3 +64,4 @@ await updateSerialNumbers().catch((error) => {
   console.error('Update failed:', error)
   process.exit(1)
 })
+ */
