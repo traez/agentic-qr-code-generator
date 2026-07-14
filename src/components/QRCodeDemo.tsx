@@ -1,3 +1,4 @@
+//src\components\QRCodeDemo.tsx
 'use client'
 
 import { useState } from 'react'
@@ -11,11 +12,19 @@ const LEVELS = [
 ] as const
 
 export default function QRCodeDemo() {
-  const [value, setValue] = useState('')
+  const [inputText, setInputText] = useState('')
+  const [submittedValue, setSubmittedValue] = useState<string | null>(null)
   const [fgColor, setFgColor] = useState('#000000')
   const [bgColor, setBgColor] = useState('#FFFFFF')
   const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('L')
   const [size, setSize] = useState(256)
+
+  function handleSubmit() {
+    const trimmed = inputText.trim()
+    if (trimmed) {
+      setSubmittedValue(trimmed)
+    }
+  }
 
   return (
     <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
@@ -27,11 +36,19 @@ export default function QRCodeDemo() {
             <label className="block text-sm font-medium text-foreground mb-1">Text or URL</label>
             <input
               type="text"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
               placeholder="Enter text or URL..."
               className="w-full border border-border rounded px-3 py-2 bg-background text-foreground"
             />
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={!inputText.trim()}
+              className="mt-2 w-full px-4 py-2 bg-foreground text-background font-medium rounded hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed border border-border"
+            >
+              Generate QR Code
+            </button>
           </div>
 
           <div className="flex gap-4">
@@ -56,14 +73,18 @@ export default function QRCodeDemo() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Error Correction</label>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              Error Correction
+            </label>
             <select
               value={level}
               onChange={(e) => setLevel(e.target.value as 'L' | 'M' | 'Q' | 'H')}
               className="w-full border border-border rounded px-3 py-2 bg-background text-foreground"
             >
               {LEVELS.map((l) => (
-                <option key={l.value} value={l.value}>{l.label}</option>
+                <option key={l.value} value={l.value}>
+                  {l.label}
+                </option>
               ))}
             </select>
           </div>
@@ -83,14 +104,20 @@ export default function QRCodeDemo() {
         </div>
 
         <div className="flex-shrink-0 border border-border rounded-lg p-4 bg-white">
-          {value ? (
-            <QRCode value={value} fgColor={fgColor} bgColor={bgColor} level={level} size={size} />
+          {submittedValue ? (
+            <QRCode
+              value={submittedValue}
+              fgColor={fgColor}
+              bgColor={bgColor}
+              level={level}
+              size={size}
+            />
           ) : (
             <div
               className="flex items-center justify-center text-muted-foreground"
               style={{ width: size, height: size }}
             >
-              Enter text to generate
+              Enter text and click Generate
             </div>
           )}
         </div>

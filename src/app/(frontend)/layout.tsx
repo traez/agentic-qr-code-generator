@@ -1,3 +1,4 @@
+//src\app\(frontend)\layout.tsx
 import React from 'react'
 import './styles.css'
 

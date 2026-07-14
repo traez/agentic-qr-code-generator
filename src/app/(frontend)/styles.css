@@ -1,66 +1,69 @@
 @import 'tailwindcss';
+/* src/app/(frontend)/styles.css */
+
+@theme {
+  /* Core Backgrounds */
+  --color-background: #f4f9fc;
+  --color-background-mid: #cbdbe6;
+  --color-background-darker: #a7bdcc;
+  --color-foreground: #1c2d3d;
+
+  /* Card & Popovers */
+  --color-card: #ffffff;
+  --color-card-foreground: #1c2d3d;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1c2d3d;
+
+  /* Primary Brand Colors */
+  --color-primary: #78a4cb;
+  --color-primary-foreground: #ffffff;
+
+  /* Secondary / Accents */
+  --color-secondary: #f9e8a2;
+  --color-secondary-foreground: #4a3e06;
+
+  --color-muted: #e2eef5;
+  --color-muted-foreground: #4b667c;
+
+  --color-accent: #b4e1eb;
+  --color-accent-foreground: #14353d;
+
+  /* Status & Semantics */
+  --color-destructive: #e06d6d;
+  --color-warning: #f9e8a2;
+  --color-caution: #e2aa5c;
+  --color-link: #245d8f;
+
+  /* Borders & Inputs */
+  --color-border: #c2d5e3;
+  --color-input: #f0f6fa;
+  --color-ring: #78a4cb;
+
+  /* Charts */
+  --color-chart-1: #b4e1eb;
+  --color-chart-2: #95bdd7;
+  --color-chart-3: #78a4cb;
+  --color-chart-4: #f9e8a2;
+  --color-chart-5: #547b9e;
+  --color-chart-6: #646464;
+  --color-chart-7: #876947;
+  --color-chart-8: #92400e;
+  --color-chart-9: #bc0000;
+
+  /* Sidebar */
+  --color-sidebar: #ebf3f7;
+  --color-sidebar-foreground: #1c2d3d;
+  --color-sidebar-primary: #78a4cb;
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: #b4e1eb;
+  --color-sidebar-accent-foreground: #14353d;
+  --color-sidebar-border: #d2e1ec;
+  --color-sidebar-ring: #78a4cb;
+}
 
 :root {
   --font-mono: 'Roboto Mono', monospace;
   --radius: 0.625rem;
-
-  /* Core Backgrounds (Using light tints of your blues/yellows) */
-  --background: #f4f9fc; /* Very bright tint of #B4E1EB */
-  --background-mid: #cbdbe6; /* Soft mid-tone mix */
-  --background-darker: #a7bdcc; /* Muted gray-blue background element */
-  --foreground: #1c2d3d; /* Deep dark blue for high-contrast text */
-
-  /* Card & Popovers */
-  --card: #ffffff;
-  --card-foreground: #1c2d3d;
-  --popover: #ffffff;
-  --popover-foreground: #1c2d3d;
-
-  /* Primary Brand Colors */
-  --primary: #78a4cb; /* Core Palette Blue */
-  --primary-foreground: #ffffff;
-
-  /* Secondary / Accents (Bringing in the bright yellow & soft blue) */
-  --secondary: #f9e8a2; /* Core Palette Yellow */
-  --secondary-foreground: #4a3e06; /* Dark contrast for yellow */
-
-  --muted: #e2eef5;
-  --muted-foreground: #4b667c;
-
-  --accent: #b4e1eb; /* Core Palette Light Blue */
-  --accent-foreground: #14353d;
-
-  /* Status & Semantics */
-  --destructive: #e06d6d;
-  --warning: #f9e8a2; /* Naturally fits warning */
-  --caution: #e2aa5c;
-  --link: #245d8f;
-
-  /* Borders & Inputs */
-  --border: #c2d5e3; /* Tint of #95BDD7 */
-  --input: #f0f6fa;
-  --ring: #78a4cb;
-
-  /* Charts (Sequential gradient built directly from your core palette) */
-  --chart-1: #b4e1eb; /* Light Blue */
-  --chart-2: #95bdd7; /* Mid Blue */
-  --chart-3: #78a4cb; /* Core Blue */
-  --chart-4: #f9e8a2; /* Accent Yellow */
-  --chart-5: #547b9e; /* Deeper Blue for contrast */
-  --chart-6: #646464;
-  --chart-7: #876947;
-  --chart-8: #92400e;
-  --chart-9: #bc0000;
-
-  /* Sidebar configuration */
-  --sidebar: #ebf3f7;
-  --sidebar-foreground: #1c2d3d;
-  --sidebar-primary: #78a4cb;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #b4e1eb;
-  --sidebar-accent-foreground: #14353d;
-  --sidebar-border: #d2e1ec;
-  --sidebar-ring: #78a4cb;
 }
 
 * {
