@@ -53,6 +53,9 @@ importers:
       react-qr-code:
         specifier: ^2.2.0
         version: 2.2.0(react@19.2.6)
+      react-qrcode-logo:
+        specifier: ^4.1.0
+        version: 4.1.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       sharp:
         specifier: 0.34.2
         version: 0.34.2
@@ -3980,6 +3983,12 @@ packages:
     resolution: {integrity: sha512-e5nS0UUN22K3Nf8KBRUzemfdJ6OmnN5w+kbnj1lvJaol9RyVRFeGl05bCkxSN2ZegbLxjjYjX1+mmAoX9+fAhw==}
     peerDependencies:
       react: '*'
+
+  react-qrcode-logo@4.1.0:
+    resolution: {integrity: sha512-drcieitJFX3u66XpFn+4PxsCzrQo5nAMXsyOtiuTZCJPUQwGwysIlr14MjKbXDhBNz3iOqM8/yV5K1mllt/mTw==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
 
   react-refresh@0.17.0:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
@@ -8864,6 +8873,12 @@ snapshots:
       prop-types: 15.8.1
       qrcode-generator: 2.0.4
       react: 19.2.6
+
+  react-qrcode-logo@4.1.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+    dependencies:
+      qrcode-generator: 2.0.4
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
 
   react-refresh@0.17.0: {}
 
