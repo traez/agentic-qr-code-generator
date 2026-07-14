@@ -52,16 +52,6 @@ export const QRCodes: CollectionConfig = {
             /^#([0-9A-Fa-f]{3}){1,2}$/.test(val || '') ||
             'Must be a valid hex color',
         },
-        {
-          name: 'dotStyle',
-          type: 'select',
-          defaultValue: 'square',
-          options: [
-            { label: 'Square', value: 'square' },
-            { label: 'Rounded', value: 'rounded' },
-            { label: 'Diamond', value: 'diamond' },
-          ],
-        },
       ],
     },
     {

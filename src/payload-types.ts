@@ -201,7 +201,6 @@ export interface QrCode {
   style?: {
     foregroundColor?: string | null;
     backgroundColor?: string | null;
-    dotStyle?: ('square' | 'rounded' | 'diamond') | null;
   };
   errorCorrectionLevel?: ('L' | 'M' | 'Q' | 'H') | null;
   transparentBackground?: boolean | null;
@@ -358,7 +357,6 @@ export interface QrCodesSelect<T extends boolean = true> {
     | {
         foregroundColor?: T;
         backgroundColor?: T;
-        dotStyle?: T;
       };
   errorCorrectionLevel?: T;
   transparentBackground?: T;

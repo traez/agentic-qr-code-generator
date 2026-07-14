@@ -3,6 +3,9 @@
 
 import { useState } from 'react'
 import QRCode from 'react-qr-code'
+import { saveQRCode, type SaveQRCodeResult } from '@/actions/qrcodes/saveQRCode'
+
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
 const LEVELS = [
   { label: 'L (7%)', value: 'L' },
@@ -18,11 +21,37 @@ export default function QRCodeDemo() {
   const [bgColor, setBgColor] = useState('#FFFFFF')
   const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('L')
   const [size, setSize] = useState(256)
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [savedShareId, setSavedShareId] = useState<string | null>(null)
 
-  function handleSubmit() {
+  function handleGenerateOnly() {
     const trimmed = inputText.trim()
     if (trimmed) {
       setSubmittedValue(trimmed)
+      setSaveStatus('idle')
+      setSavedShareId(null)
+    }
+  }
+
+  async function handleGenerateAndSave() {
+    const trimmed = inputText.trim()
+    if (!trimmed) return
+    setSubmittedValue(trimmed)
+    setSaveStatus('saving')
+    setSavedShareId(null)
+
+    const result: SaveQRCodeResult = await saveQRCode({
+      inputText: trimmed,
+      style: { foregroundColor: fgColor, backgroundColor: bgColor },
+      errorCorrectionLevel: level,
+      transparentBackground: bgColor === '#FFFFFF' ? false : true,
+    })
+
+    if (result.ok) {
+      setSaveStatus('saved')
+      setSavedShareId(result.doc.shareId)
+    } else {
+      setSaveStatus('error')
     }
   }
 
@@ -41,14 +70,32 @@ export default function QRCodeDemo() {
               placeholder="Enter text or URL..."
               className="w-full border border-border rounded px-3 py-2 bg-background text-foreground"
             />
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!inputText.trim()}
-              className="mt-2 w-full px-4 py-2 bg-foreground text-background font-medium rounded hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed border border-border"
-            >
-              Generate QR Code
-            </button>
+            <div className="mt-2 flex gap-2">
+              <button
+                type="button"
+                onClick={handleGenerateOnly}
+                disabled={!inputText.trim()}
+                className="flex-1 px-4 py-2 bg-foreground text-background font-medium rounded hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed border border-border"
+              >
+                Generate QR Code
+              </button>
+              <button
+                type="button"
+                onClick={handleGenerateAndSave}
+                disabled={!inputText.trim() || saveStatus === 'saving'}
+                className="flex-1 px-4 py-2 bg-primary text-primary-foreground font-medium rounded hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed border border-border"
+              >
+                {saveStatus === 'saving' ? 'Saving...' : 'Generate & Save'}
+              </button>
+            </div>
+            {saveStatus === 'saved' && savedShareId && (
+              <p className="mt-1 text-xs text-green-600">
+                Saved — Share ID: <span className="font-mono">{savedShareId}</span>
+              </p>
+            )}
+            {saveStatus === 'error' && (
+              <p className="mt-1 text-xs text-red-600">Failed to save. Try again.</p>
+            )}
           </div>
 
           <div className="flex gap-4">
