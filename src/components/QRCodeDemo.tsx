@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import QRCode from 'react-qr-code'
+import { QRCode } from 'react-qrcode-logo'
 import { saveQRCode, type SaveQRCodeResult } from '@/actions/qrcodes/saveQRCode'
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
@@ -21,8 +21,27 @@ export default function QRCodeDemo() {
   const [bgColor, setBgColor] = useState('#FFFFFF')
   const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('L')
   const [size, setSize] = useState(256)
+  const [dotStyle, setDotStyle] = useState<'squares' | 'dots' | 'fluid'>('squares')
+  const [logoBase64, setLogoBase64] = useState<string | null>(null)
+  const [logoFileName, setLogoFileName] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [savedShareId, setSavedShareId] = useState<string | null>(null)
+
+  function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setLogoFileName(file.name)
+    const reader = new FileReader()
+    reader.onload = () => setLogoBase64(reader.result as string)
+    reader.readAsDataURL(file)
+    if (level === 'L') setLevel('M')
+    e.target.value = ''
+  }
+
+  function handleRemoveLogo() {
+    setLogoBase64(null)
+    setLogoFileName(null)
+  }
 
   function handleGenerateOnly() {
     const trimmed = inputText.trim()
@@ -40,11 +59,19 @@ export default function QRCodeDemo() {
     setSaveStatus('saving')
     setSavedShareId(null)
 
+    let logoPayload: { data: string; filename: string; mimeType: string } | undefined
+    if (logoBase64 && logoFileName) {
+      const [header, rawData] = logoBase64.split(',')
+      const mimeType = header.replace('data:', '').replace(';base64', '')
+      logoPayload = { data: rawData, filename: logoFileName, mimeType }
+    }
+
     const result: SaveQRCodeResult = await saveQRCode({
       inputText: trimmed,
-      style: { foregroundColor: fgColor, backgroundColor: bgColor },
+      style: { foregroundColor: fgColor, backgroundColor: bgColor, dotStyle },
       errorCorrectionLevel: level,
       transparentBackground: bgColor === '#FFFFFF' ? false : true,
+      ...(logoPayload ? { logo: logoPayload } : {}),
     })
 
     if (result.ok) {
@@ -120,6 +147,45 @@ export default function QRCodeDemo() {
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Dot Style</label>
+            <div className="flex gap-4">
+              {([{ label: 'Square', value: 'squares' }, { label: 'Rounded', value: 'dots' }, { label: 'Fluid', value: 'fluid' }] as const).map((s) => (
+                <label key={s.value} className="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="dotStyle"
+                    value={s.value}
+                    checked={dotStyle === s.value}
+                    onChange={() => setDotStyle(s.value)}
+                    className="accent-foreground"
+                  />
+                  <span className="text-sm text-foreground">{s.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Logo (optional)</label>
+            {logoBase64 ? (
+              <div className="flex items-center gap-3">
+                <img src={logoBase64} alt="Logo" className="w-10 h-10 object-contain border border-border rounded" />
+                <span className="text-sm text-muted-foreground truncate flex-1">{logoFileName}</span>
+                <button type="button" onClick={handleRemoveLogo} className="text-sm text-red-600 hover:text-red-800">
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <input
+                type="file"
+                accept="image/png,image/svg+xml,image/jpeg"
+                onChange={handleLogoUpload}
+                className="w-full text-sm text-muted-foreground file:mr-3 file:py-1.5 file:px-3 file:rounded file:border file:border-border file:text-sm file:bg-background file:text-foreground hover:file:bg-accent"
+              />
+            )}
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-foreground mb-1">
               Error Correction
             </label>
@@ -156,8 +222,11 @@ export default function QRCodeDemo() {
               value={submittedValue}
               fgColor={fgColor}
               bgColor={bgColor}
-              level={level}
+              ecLevel={level}
               size={size}
+              qrStyle={dotStyle}
+              logoImage={logoBase64 ?? undefined}
+              removeQrCodeBehindLogo
             />
           ) : (
             <div
