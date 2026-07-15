@@ -238,7 +238,6 @@ export default function QRCodeDemo() {
           )}
         </div>
       </div>
-      <article className="mt-12">Article</article> 
     </section>
   )
 }
