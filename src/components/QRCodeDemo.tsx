@@ -1,6 +1,5 @@
 //src\components\QRCodeDemo.tsx
 'use client'
-
 import { useState } from 'react'
 import { QRCode } from 'react-qrcode-logo'
 import { saveQRCode, type SaveQRCodeResult } from '@/actions/qrcodes/saveQRCode'

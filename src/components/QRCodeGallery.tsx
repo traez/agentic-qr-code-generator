@@ -20,8 +20,29 @@ export default function QRCodeGallery() {
     setOrigin(window.location.origin)
   }, [])
 
-  if (loading) return null
-  if (qrs.length === 0) return null
+  if (loading) return (
+    <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
+      <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-8">Saved QR Codes</h2>
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="border border-border rounded-lg overflow-hidden">
+            <div className="aspect-square skeleton" />
+            <div className="p-3">
+              <div className="h-3 skeleton w-3/4" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+  if (qrs.length === 0) return (
+    <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
+      <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-8">Saved QR Codes</h2>
+      <div className="flex items-center justify-center min-h-[200px]">
+        <p className="text-muted-foreground text-lg">No saved QR codes yet. Generate one above!</p>
+      </div>
+    </section>
+  )
 
   return (
     <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
@@ -95,10 +116,10 @@ export default function QRCodeGallery() {
               <div className="pt-2">
                 <p className="text-xs text-muted-foreground mb-1">Shareable link:</p>
                 <a
-                  href={`/share/${selectedQr.shareId}`}
+                  href={`/${selectedQr.shareId}`}
                   className="text-sm text-primary underline break-all hover:text-primary/80"
                 >
-                  {origin}/share/{selectedQr.shareId}
+                  {origin}/{selectedQr.shareId}
                 </a>
               </div>
             )}

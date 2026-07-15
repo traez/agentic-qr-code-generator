@@ -8,7 +8,6 @@ import sharp from 'sharp'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
-import { Projects } from './collections/Projects'
 import { QRCodes } from './collections/QRCodes'
 
 const filename = fileURLToPath(import.meta.url)
@@ -22,7 +21,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Projects, QRCodes],
+  collections: [Users, Media, QRCodes],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
