@@ -20,6 +20,17 @@ export default function QRCodeGallery() {
     setOrigin(window.location.origin)
   }, [])
 
+  useEffect(() => {
+    const hash = window.location.hash.replace('#qr-', '')
+    if (!hash || qrs.length === 0) return
+    const match = qrs.find((qr) => qr.shareId === hash)
+    if (match) {
+      setSelectedQr(match)
+      const el = document.getElementById(`qr-${hash}`)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [qrs])
+
   if (loading) return (
     <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
       <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-8">Saved QR Codes</h2>
@@ -50,7 +61,7 @@ export default function QRCodeGallery() {
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         {qrs.map((qr) => (
-          <Card key={qr.id} onClick={() => setSelectedQr(qr)}>
+          <Card key={qr.id} id={qr.shareId ? `qr-${qr.shareId}` : undefined} onClick={() => setSelectedQr(qr)}>
             <div className="aspect-square bg-muted flex items-center justify-center p-4">
               <p className="text-sm text-muted-foreground text-center break-all line-clamp-3">
                 {qr.inputText}
@@ -116,10 +127,10 @@ export default function QRCodeGallery() {
               <div className="pt-2">
                 <p className="text-xs text-muted-foreground mb-1">Shareable link:</p>
                 <a
-                  href={`/${selectedQr.shareId}`}
+                  href={`/#qr-${selectedQr.shareId}`}
                   className="text-sm text-primary underline break-all hover:text-primary/80"
                 >
-                  {origin}/{selectedQr.shareId}
+                  {origin}/#qr-{selectedQr.shareId}
                 </a>
               </div>
             )}
