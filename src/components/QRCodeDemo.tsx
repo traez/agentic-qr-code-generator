@@ -1,6 +1,6 @@
 //src\components\QRCodeDemo.tsx
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { QRCode } from 'react-qrcode-logo'
 import { saveQRCode, type SaveQRCodeResult } from '@/actions/qrcodes/saveQRCode'
 
@@ -25,6 +25,22 @@ export default function QRCodeDemo() {
   const [logoFileName, setLogoFileName] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [savedShareId, setSavedShareId] = useState<string | null>(null)
+  const [maxSize, setMaxSize] = useState(480)
+
+  useEffect(() => {
+    function updateMax() {
+      const w = window.innerWidth
+      let newMax: number
+      if (w < 640) newMax = 210
+      else if (w < 1024) newMax = 350
+      else newMax = 480
+      setMaxSize(newMax)
+      setSize((prev) => Math.min(prev, newMax))
+    }
+    updateMax()
+    window.addEventListener('resize', updateMax)
+    return () => window.removeEventListener('resize', updateMax)
+  }, [])
 
   function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -206,7 +222,7 @@ export default function QRCodeDemo() {
             <input
               type="range"
               min="128"
-              max="512"
+              max={maxSize}
               step="16"
               value={size}
               onChange={(e) => setSize(Number(e.target.value))}
