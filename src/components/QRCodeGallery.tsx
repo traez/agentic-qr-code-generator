@@ -100,10 +100,17 @@ export default function QRCodeGallery() {
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         {qrs.map((qr) => (
           <Card key={qr.id} id={qr.shareId ? `qr-${qr.shareId}` : undefined} onClick={() => setSelectedQr(qr)}>
-            <div className="aspect-square bg-muted flex items-center justify-center p-4">
-              <p className="text-sm text-muted-foreground text-center break-all line-clamp-3">
-                {qr.inputText}
-              </p>
+            <div className="aspect-square bg-muted flex items-center justify-center p-2">
+              <QRCode
+                value={qr.inputText}
+                fgColor={qr.style?.foregroundColor ?? '#000000'}
+                bgColor={qr.style?.backgroundColor ?? '#FFFFFF'}
+                ecLevel={qr.errorCorrectionLevel ?? 'M'}
+                size={128}
+                qrStyle={qr.style?.dotStyle ?? 'squares'}
+                logoImage={getLogoUrl(qr)}
+                removeQrCodeBehindLogo
+              />
             </div>
             <div className="p-3 border-t border-border">
               <p className="text-xs text-muted-foreground truncate">{qr.inputText}</p>
