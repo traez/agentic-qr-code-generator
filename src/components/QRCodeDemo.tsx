@@ -98,10 +98,12 @@ export default function QRCodeDemo() {
   }
 
   return (
-    <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
-      <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-8">QR Code Generator</h2>
+    <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16 ">
+      <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-8 text-center">
+        QR Code Generator
+      </h2>
 
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <article className="flex flex-col lg:flex-row gap-8 items-start justify-center">
         <div className="flex flex-col gap-4 w-full max-w-md">
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">Text or URL</label>
@@ -164,7 +166,13 @@ export default function QRCodeDemo() {
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">Dot Style</label>
             <div className="flex gap-4">
-              {([{ label: 'Square', value: 'squares' }, { label: 'Rounded', value: 'dots' }, { label: 'Fluid', value: 'fluid' }] as const).map((s) => (
+              {(
+                [
+                  { label: 'Square', value: 'squares' },
+                  { label: 'Rounded', value: 'dots' },
+                  { label: 'Fluid', value: 'fluid' },
+                ] as const
+              ).map((s) => (
                 <label key={s.value} className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="radio"
@@ -181,12 +189,24 @@ export default function QRCodeDemo() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Logo (optional)</label>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              Logo (optional)
+            </label>
             {logoBase64 ? (
               <div className="flex items-center gap-3">
-                <img src={logoBase64} alt="Logo" className="w-10 h-10 object-contain border border-border rounded" />
-                <span className="text-sm text-muted-foreground truncate flex-1">{logoFileName}</span>
-                <button type="button" onClick={handleRemoveLogo} className="text-sm text-red-600 hover:text-red-800">
+                <img
+                  src={logoBase64}
+                  alt="Logo"
+                  className="w-10 h-10 object-contain border border-border rounded"
+                />
+                <span className="text-sm text-muted-foreground truncate flex-1">
+                  {logoFileName}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleRemoveLogo}
+                  className="text-sm text-red-600 hover:text-red-800"
+                >
                   Remove
                 </button>
               </div>
@@ -252,7 +272,7 @@ export default function QRCodeDemo() {
             </div>
           )}
         </div>
-      </div>
+      </article>
     </section>
   )
 }
