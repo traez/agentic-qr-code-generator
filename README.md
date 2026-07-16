@@ -1,6 +1,6 @@
-# Password Pulse
+# Agentic QR Code Generator
 
-A local, fast Password Strength Visualizer that provides deep analytical feedback beyond basic weak/strong metrics.
+A web-based QR code generator with style customization, logo embedding, save/gallery, and export features. Built on Payload CMS 3 + Next.js 16.
 
 ## Table of contents
 
@@ -10,9 +10,9 @@ A local, fast Password Strength Visualizer that provides deep analytical feedbac
   - [Links](#links)
   - [Built with](#built-with)
   - [How It Works](#how-it-works)
-    - [Entropy Calculation](#entropy-calculation)
-    - [Crack-Time Estimation](#crack-time-estimation)
-    - [Strength Tiers](#strength-tiers)
+    - [QR Generation](#qr-generation)
+    - [Style Customization](#style-customization)
+    - [Save & Gallery](#save--gallery)
     - [Features](#features)
   - [Continued development](#continued-development)
   - [Useful resources](#useful-resources)
@@ -23,7 +23,7 @@ A local, fast Password Strength Visualizer that provides deep analytical feedbac
 
 ### The challenge
 
-Build a fully client-side password strength analyzer that computes entropy, estimates crack times, detects patterns, and provides real-time actionable feedback — all without external libraries or server calls.
+Build a full-stack QR code generator with Payload CMS backend, PostgreSQL database, and Cloudflare R2 file storage — supporting style customization, logo embedding, save/gallery, and shareable links.
 
 ### Screenshot
 
@@ -31,50 +31,41 @@ Build a fully client-side password strength analyzer that computes entropy, esti
 
 ### Links
 
-- Solution URL: [https://github.com/traez/agentic-password-pulse](https://github.com/traez/agentic-password-pulse)
-- Live Site URL: [https://agentic-password-pulse.vercel.app/](https://agentic-password-pulse.vercel.app/)
+- Solution URL: [https://github.com/traez/agentic-qr-code-generator](https://github.com/traez/agentic-qr-code-generator)
+- Live Site URL: [https://agentic-qr-code-generator.vercel.app/](https://agentic-qr-code-generator.vercel.app/)
 
 ## Built with
 
-- **Vite** — bundler and dev server
-- **Vanilla TypeScript** — no frontend frameworks
-- **Vanilla CSS** — no CSS utilities
-- **No external crypto or password-analysis libraries** — all logic implemented from scratch
+- **Next.js 16** — framework (App Router)
+- **Payload CMS 3.85** — backend / CMS
+- **PostgreSQL** — database (via `@payloadcms/db-postgres`)
+- **Cloudflare R2** — file storage (via `@payloadcms/storage-s3`)
+- **Tailwind CSS v4** — utility-first styling
+- **react-qrcode-logo** — QR code generation (client-side Canvas)
 
 ## How It Works
 
-### Entropy Calculation
+### QR Generation
 
-Entropy is calculated using the formula `E = log₂(R^L)` where:
+Uses `react-qrcode-logo`'s `<QRCode>` component to render QR codes directly in the browser via Canvas. Supports text/URL input with adjustable size. Server stores input data and style configuration only — images are generated client-side and never persisted as image files.
 
-- **R** = size of the active character pool (sum of detected character class sizes)
-- **L** = password length (counted by Unicode code points, not UTF-16 code units)
+### Style Customization
 
-Character pool sizes: lowercase (26), uppercase (26), digits (10), symbols (~33). Only pools actually present in the password contribute to R.
+Foreground and background hex color pickers, three dot styles (Squares / Rounded / Fluid), and four error correction levels (L / M / Q / H). Optional logo upload (PNG, SVG, JPEG) is embedded inline via the `logoImage` prop; error correction auto-bumps to M when a logo is added to maintain scannability.
 
-The analysis engine then applies **pattern penalties** (repeated characters, sequential patterns, keyboard walks, dictionary words, date patterns, L33t substitutions) to derive **effective entropy**, which drives the strength meter and crack-time estimate.
+### Save & Gallery
 
-### Crack-Time Estimation
-
-Assumes an offline attack at **10 billion guesses/second**. The average-case crack time is `2^(E-1) / 10^10` seconds, displayed in the largest sensible unit (seconds → minutes → hours → days → years → centuries).
-
-### Strength Tiers
-
-| Effective Entropy | Label       |
-| ----------------- | ----------- |
-| < 28 bits         | Very Weak   |
-| 28–35 bits        | Weak        |
-| 36–59 bits        | Fair        |
-| 60–79 bits        | Strong      |
-| ≥ 80 bits         | Very Strong |
+"Generate & Save" calls a Server Action (`saveQRCode`) that persists the input text, style config, and optional logo (uploaded to Media → R2) as a `qr-codes` record in PostgreSQL. The gallery (`QRCodeGallery`) fetches all saved codes via `listQRCodes` and displays them in a responsive grid. Clicking a card opens a detail modal with download, clipboard copy, and a shareable hash link (`/#qr-{shareId}`).
 
 ### Features
 
-- **Real-time analysis** — live entropy, crack time, and checklist suggestions on every keystroke
-- **Pattern detection** — detects repeated chars, sequential patterns, QWERTY walks, dictionary words, dates, and L33t substitutions
-- **Password generator** — cryptographically secure (`crypto.getRandomValues`) with customizable length and character classes
-- **Clipboard copy** — works on HTTPS (`navigator.clipboard`) and HTTP (`document.execCommand` fallback)
-- **Dark/light theme** — follows OS preference via `prefers-color-scheme`
+- **Real-time QR rendering** — live preview on every input change
+- **Style customization** — colors, dot styles, error correction level
+- **Logo embedding** — upload logo, auto-bump EC, inline rendering
+- **Save to gallery** — persist to PostgreSQL via Server Actions
+- **Download PNG** — one-click download via `react-qrcode-logo`'s `downloadQRCode`
+- **Copy to clipboard** — `generateBlob` + `ClipboardItem` for image/png
+- **Share via link** — URL hash `#qr-{shareId}` auto-opens matching QR in gallery
 
 ## Continued development
 
