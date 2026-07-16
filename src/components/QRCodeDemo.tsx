@@ -99,7 +99,7 @@ export default function QRCodeDemo() {
 
   return (
     <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
-      <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-8">QR Code Demo</h2>
+      <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-8">QR Code Generator</h2>
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         <div className="flex flex-col gap-4 w-full max-w-md">
