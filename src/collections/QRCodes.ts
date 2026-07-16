@@ -99,16 +99,5 @@ export const QRCodes: CollectionConfig = {
         kind: { equals: 'qr-png' },
       },
     },
-    {
-      name: 'exportSvg',
-      type: 'upload',
-      relationTo: 'media',
-      admin: {
-        readOnly: true,
-      },
-      filterOptions: {
-        kind: { equals: 'qr-svg' },
-      },
-    },
   ],
 }

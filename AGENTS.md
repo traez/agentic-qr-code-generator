@@ -104,7 +104,6 @@ src/
   - `transparentBackground` (checkbox, default false)
   - `logo` (upload → media, filtered to `kind=logo`)
   - `exportPng` (upload → media, read-only, filtered to `kind=qr-png`)
-  - `exportSvg` (upload → media, read-only, filtered to `kind=qr-svg`)
 
 **Projects** (`slug: projects` — NOT registered in `payload.config.ts`)
 - Exists as a collection file but is not included in the Payload config `collections` array.
@@ -180,4 +179,4 @@ S3_SECRET=              # R2 secret access key
 2. **Dockerfile** requires `output: 'standalone'` in `next.config.ts`, which is not currently set.
 3. **`.env.example`** is outdated — shows `mongodb://` URL and lacks S3 config variables.
 4. **docker-compose.yml** uses MongoDB (commented out Postgres) while the application uses PostgreSQL.
-6. **SVG export** fields exist on the QRCodes collection schema (`exportSvg`) but no client-side SVG export is implemented.
+

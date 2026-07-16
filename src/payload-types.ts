@@ -184,7 +184,6 @@ export interface QrCode {
   transparentBackground?: boolean | null;
   logo?: (number | null) | Media;
   exportPng?: (number | null) | Media;
-  exportSvg?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -325,7 +324,6 @@ export interface QrCodesSelect<T extends boolean = true> {
   transparentBackground?: T;
   logo?: T;
   exportPng?: T;
-  exportSvg?: T;
   updatedAt?: T;
   createdAt?: T;
 }
