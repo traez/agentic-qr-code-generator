@@ -1,10 +1,31 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { listQRCodes } from '@/actions/qrcodes/listQRCodes'
 import type { QrCode } from '@/payload-types'
+import { QRCode, downloadQRCode, generateBlob } from 'react-qrcode-logo'
 import Card from './ui/Card'
 import Modal from './ui/Modal'
+
+function getLogoUrl(qr: QrCode): string | undefined {
+  if (qr.logo && typeof qr.logo === 'object' && 'url' in qr.logo) {
+    return qr.logo.url ?? undefined
+  }
+  return undefined
+}
+
+function getQrOptions(qr: QrCode) {
+  return {
+    value: qr.inputText,
+    fgColor: qr.style?.foregroundColor ?? '#000000',
+    bgColor: qr.style?.backgroundColor ?? '#FFFFFF',
+    ecLevel: qr.errorCorrectionLevel ?? 'M',
+    size: 256,
+    qrStyle: qr.style?.dotStyle ?? 'squares',
+    logoImage: getLogoUrl(qr),
+    removeQrCodeBehindLogo: true,
+  }
+}
 
 export default function QRCodeGallery() {
   const [qrs, setQrs] = useState<QrCode[]>([])
@@ -30,6 +51,23 @@ export default function QRCodeGallery() {
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }, [qrs])
+
+  const handleDownloadPng = useCallback(async () => {
+    if (!selectedQr) return
+    await downloadQRCode(getQrOptions(selectedQr), 'png', 'qr-code.png')
+  }, [selectedQr])
+
+  const handleCopyClipboard = useCallback(async () => {
+    if (!selectedQr) return
+    try {
+      const blob = await generateBlob(getQrOptions(selectedQr), 'png')
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob }),
+      ])
+    } catch {
+      // Clipboard write failed — user may have denied permission
+    }
+  }, [selectedQr])
 
   if (loading) return (
     <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
@@ -77,8 +115,17 @@ export default function QRCodeGallery() {
       <Modal open={!!selectedQr} onClose={() => setSelectedQr(null)}>
         {selectedQr && (
           <div className="space-y-5">
-            <div className="aspect-square bg-muted flex items-center justify-center rounded-lg">
-              <span className="text-muted-foreground text-sm">QR Preview</span>
+            <div className="flex items-center justify-center rounded-lg p-4">
+              <QRCode
+                value={selectedQr.inputText}
+                fgColor={selectedQr.style?.foregroundColor ?? '#000000'}
+                bgColor={selectedQr.style?.backgroundColor ?? '#FFFFFF'}
+                ecLevel={selectedQr.errorCorrectionLevel ?? 'M'}
+                size={200}
+                qrStyle={selectedQr.style?.dotStyle ?? 'squares'}
+                logoImage={getLogoUrl(selectedQr)}
+                removeQrCodeBehindLogo
+              />
             </div>
 
             <div>
@@ -112,13 +159,16 @@ export default function QRCodeGallery() {
             )}
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <button disabled className="px-4 py-2 border border-border rounded text-sm bg-foreground text-background font-medium opacity-50 cursor-not-allowed">
+              <button
+                onClick={handleDownloadPng}
+                className="px-4 py-2 border border-border rounded text-sm bg-foreground text-background font-medium hover:opacity-90 transition-opacity"
+              >
                 Download PNG
               </button>
-              <button disabled className="px-4 py-2 border border-border rounded text-sm bg-foreground text-background font-medium opacity-50 cursor-not-allowed">
-                Download SVG
-              </button>
-              <button disabled className="px-4 py-2 border border-border rounded text-sm bg-foreground text-background font-medium opacity-50 cursor-not-allowed">
+              <button
+                onClick={handleCopyClipboard}
+                className="px-4 py-2 border border-border rounded text-sm bg-foreground text-background font-medium hover:opacity-90 transition-opacity"
+              >
                 Copy to Clipboard
               </button>
             </div>
