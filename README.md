@@ -1,67 +1,95 @@
-# Payload Blank Template
+# Password Pulse
 
-This template comes configured with the bare minimum to get started on anything you need.
+A local, fast Password Strength Visualizer that provides deep analytical feedback beyond basic weak/strong metrics.
 
-## Quick start
+## Table of contents
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+- [Overview](#overview)
+  - [The challenge](#the-challenge)
+  - [Screenshot](#screenshot)
+  - [Links](#links)
+  - [Built with](#built-with)
+  - [How It Works](#how-it-works)
+    - [Entropy Calculation](#entropy-calculation)
+    - [Crack-Time Estimation](#crack-time-estimation)
+    - [Strength Tiers](#strength-tiers)
+    - [Features](#features)
+  - [Continued development](#continued-development)
+  - [Useful resources](#useful-resources)
+  - [Author](#author)
+  - [Acknowledgments](#acknowledgments)
 
-## Quick Start - local setup
+## Overview
 
-To spin up this template locally, follow these steps:
+### The challenge
 
-### Clone
+Build a fully client-side password strength analyzer that computes entropy, estimates crack times, detects patterns, and provides real-time actionable feedback — all without external libraries or server calls.
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+### Screenshot
 
-### Development
+![](/public/screenshot-app.png)
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+### Links
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+- Solution URL: [https://github.com/traez/agentic-password-pulse](https://github.com/traez/agentic-password-pulse)
+- Live Site URL: [https://agentic-password-pulse.vercel.app/](https://agentic-password-pulse.vercel.app/)
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+## Built with
 
-#### Docker (Optional)
+- **Vite** — bundler and dev server
+- **Vanilla TypeScript** — no frontend frameworks
+- **Vanilla CSS** — no CSS utilities
+- **No external crypto or password-analysis libraries** — all logic implemented from scratch
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+## How It Works
 
-To do so, follow these steps:
+### Entropy Calculation
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+Entropy is calculated using the formula `E = log₂(R^L)` where:
 
-## How it works
+- **R** = size of the active character pool (sum of detected character class sizes)
+- **L** = password length (counted by Unicode code points, not UTF-16 code units)
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+Character pool sizes: lowercase (26), uppercase (26), digits (10), symbols (~33). Only pools actually present in the password contribute to R.
 
-### Collections
+The analysis engine then applies **pattern penalties** (repeated characters, sequential patterns, keyboard walks, dictionary words, date patterns, L33t substitutions) to derive **effective entropy**, which drives the strength meter and crack-time estimate.
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+### Crack-Time Estimation
 
-- #### Users (Authentication)
+Assumes an offline attack at **10 billion guesses/second**. The average-case crack time is `2^(E-1) / 10^10` seconds, displayed in the largest sensible unit (seconds → minutes → hours → days → years → centuries).
 
-  Users are auth-enabled collections that have access to the admin panel.
+### Strength Tiers
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+| Effective Entropy | Label       |
+| ----------------- | ----------- |
+| < 28 bits         | Very Weak   |
+| 28–35 bits        | Weak        |
+| 36–59 bits        | Fair        |
+| 60–79 bits        | Strong      |
+| ≥ 80 bits         | Very Strong |
 
-- #### Media
+### Features
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+- **Real-time analysis** — live entropy, crack time, and checklist suggestions on every keystroke
+- **Pattern detection** — detects repeated chars, sequential patterns, QWERTY walks, dictionary words, dates, and L33t substitutions
+- **Password generator** — cryptographically secure (`crypto.getRandomValues`) with customizable length and character classes
+- **Clipboard copy** — works on HTTPS (`navigator.clipboard`) and HTTP (`document.execCommand` fallback)
+- **Dark/light theme** — follows OS preference via `prefers-color-scheme`
 
-### Docker
+## Continued development
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+- More projects; increased competence!
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
+## Useful resources
 
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
+YouTube  
+Google  
+Artificial Intelligence
 
-## Questions
+## Author
 
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+- Website — [Zeeofor Technologies](https://zeeofor.tech)
+
+## Acknowledgments
+
+- Jehovah that keeps breath in my lungs
