@@ -32,7 +32,7 @@ Build a full-stack QR code generator with Payload CMS backend, PostgreSQL databa
 ### Links
 
 - Solution URL: [https://github.com/traez/agentic-qr-code-generator](https://github.com/traez/agentic-qr-code-generator)
-- Live Site URL: [https://agentic-qr-code-generator.vercel.app/](https://agentic-qr-code-generator.vercel.app/)
+- Live Site URL: [https://qrcodegen.zeeofor.tech/](https://qrcodegen.zeeofor.tech/)
 
 ## Built with
 
