@@ -176,7 +176,129 @@ S3_SECRET=              # R2 secret access key
 
 ## Known Issues
 1. **E2E frontend test** (`tests/e2e/frontend.e2e.spec.ts`) contains stale assertions (expects Payload blank template content, not the actual QR generator UI).
-2. **Dockerfile** requires `output: 'standalone'` in `next.config.ts`, which is not currently set.
+2. **Dockerfile** requires `output: 'standalone'` in `next.config.ts`, which is not currently set. Vercel does not need this — Coolify/Docker only.
 3. **`.env.example`** is outdated — shows `mongodb://` URL and lacks S3 config variables.
 4. **docker-compose.yml** uses MongoDB (commented out Postgres) while the application uses PostgreSQL.
+
+## Target State — Supabase + Vercel (authoritative)
+
+> Mirrors Branddrive migration proven path (`AGENTS2.md` §5a, `README2.md` §6.3). Principle: env-driven DB. Migration = `pg_dump`/`pg_restore` + `DATABASE_URL` swap, no code changes.
+
+| Area | Value |
+|---|---|
+| Database | Supabase, ONE project for dev + prod. Monitor 7-day Free pause (see below) |
+| Legacy DB | Coolify/Hetzner Postgres — one-time export source only, then cold backup |
+| App | Vercel `https://agentic-qrcodegen.vercel.app/` (cutover done, was `https://qrcodegen.zeeofor.tech/`) |
+| DNS | Vercel free domain only. Old Cloudflare `qrcodegen.zeeofor.tech` retired (delete `A/CNAME` or redirect if still present) |
+| File storage | Cloudflare R2 stays as-is. `pg_dump` moves only Postgres metadata (`users`, `media`, `qr-codes` rows); actual files stay in R2. Carry `S3_*` over unchanged |
+| Env | `DATABASE_URL` swapped to Supabase pooler, `PAYLOAD_SECRET` rotated into Vercel, never committed |
+| Repo | Same GitHub repo, connected to Vercel |
+
+Rationale: hobby project hosts on free tiers (Vercel + Supabase) to preserve paid Hetzner/Coolify resources for paying projects. Zero code changes — `DATABASE_URL` swap only (+ `PAYLOAD_SECRET` rotation, `S3_*` carry-over).
+
+## Invariants
+
+1. Never commit `.env*` (`.gitignore:41`), `*.pem` (`.gitignore:25`), root `*.dump`/`*.sql`, `id_ed25519`. Use placeholders (`<coolify-pw>`, `<supabase-pw>`, `<ref>`) in docs/chat. Note: `.gitignore` does not yet cover `*.dump`/`*.sql` — delete them after verified import regardless.
+2. Never hardcode URLs, IPs, passwords, or connection strings in `src/`. Always `process.env.*` (`src/payload.config.ts:26-54`).
+3. Never use `127.0.0.1:5434` tunnel URL in Vercel env. Restores use the proven pooler path below; direct (`:5432?sslmode=require`) is for `payload migrate`/SQL checks only.
+4. Delete `*.dump` after verified import (contains password hashes + sessions).
+5. R2 is out of scope for dump/restore. Do not wipe or migrate R2 bucket as part of DB cutover.
+
+## Environment Contract
+
+Local `.env` (gitignored, Supabase for dev):
+
+```ini
+DATABASE_URL=postgresql://postgres:<supabase-pw>@db.<ref>.supabase.co:6543/postgres?sslmode=require
+# Direct (migrations/restore checks only):
+# DATABASE_URL_DIRECT=postgresql://postgres:<supabase-pw>@db.<ref>.supabase.co:5432/postgres?sslmode=require
+PAYLOAD_SECRET=<local-dev-secret>
+S3_BUCKET=<existing-r2-bucket>
+S3_ENDPOINT=<existing-r2-endpoint>
+S3_ACCESS_KEY_ID=<existing-r2-key>
+S3_SECRET=<existing-r2-secret>
+```
+
+Vercel dashboard (Production + Preview, same Supabase project):
+
+| Var | Value |
+|---|---|
+| `DATABASE_URL` | pooled `:6543?sslmode=require` (runtime, via `postgresAdapter` `pool.connectionString` in `src/payload.config.ts:30-34`) |
+| `PAYLOAD_SECRET` | `<rotated>` — Payload Users auth, no `BETTER_AUTH_*` in this app |
+| `S3_BUCKET` / `S3_ENDPOINT` / `S3_ACCESS_KEY_ID` / `S3_SECRET` | same R2 values as Coolify (files stay in R2) |
+
+## One-Time Migration: Coolify → Supabase (proven path from Branddrive)
+
+Prereqs: PG 18 client (`C:\Program Files\PostgreSQL\18\bin\`), Supabase EU project created, tunnel up only for export:
+
+```powershell
+ssh -N -L 5434:127.0.0.1:5434 root@178.104.79.236
+```
+
+Note: local `.vscode/tasks.json` `Start DB SSH Tunnel` task uses port `5434` (not Branddrive's `5433`). It is gitignored (`.gitignore:52`) and will be deleted after verification like in `AGENTS2.md` §5a — run the `ssh` command above manually in a separate terminal for any re-export.
+
+### Export: Coolify → local file (via tunnel)
+
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\pg_dump.exe" "postgres://postgres:<coolify-pw>@127.0.0.1:5434/postgres" `
+  -Fc -v --no-owner --no-acl -f qrcodegen.dump
+```
+
+### Import: local file → Supabase (via pooler, proven)
+
+```powershell
+$env:PGPASSWORD = "<supabase-pw>"
+& "C:\Program Files\PostgreSQL\18\bin\pg_restore.exe" `
+  --host=aws-0-eu-west-1.pooler.supabase.com `
+  --port=6543 `
+  --username=postgres.<ref> `
+  --dbname=postgres `
+  --schema=public `
+  --no-owner --no-acl --clean --if-exists `
+  --verbose qrcodegen.dump
+```
+
+Why this form: the dump includes Supabase-managed schemas (`auth`, `storage`, `vault`) that hosted Supabase owns — restoring them causes permission errors. `--schema=public` restores only your tables/data (`users`, `media`, `qr-codes`, `payload-migrations`, etc.) so those errors disappear. Password via `$env:PGPASSWORD` keeps it out of process args.
+
+Post-restore (mandatory):
+
+1. Row counts match on both sides: `users` / `media` / `qr-codes` + `payload-migrations` version.
+2. `DATABASE_URL` = DIRECT → `pnpm payload migrate:status`, `pnpm payload migrate` if needed (Payload `src/migrations/` — NOT Drizzle `db:push`; there is no `drizzle.config.ts` / `BETTER_AUTH_URL` in this app).
+3. Switch local `.env` + Vercel `DATABASE_URL` to pooler `:6543?sslmode=require`.
+4. `pnpm build` + smoke: home renders QR demo, Generate & Save creates `qr-codes` row, gallery lists it, `/admin` login works, R2 media URLs resolve (proves `S3_*` carry-over).
+5. Delete `qrcodegen.dump` / `*.sql`, then delete `.vscode/tasks.json` tunnel task.
+
+pgAdmin daily: host `db.<ref>.supabase.co:5432`, SSL require, no SSH tunnel.
+
+## Supabase Free Pause — Monitoring
+
+Free projects pause after ~7 days idle; app looks dead until Dashboard > Restore. Required: keep-warm via Vercel Cron or UptimeRobot `GET https://agentic-qrcodegen.vercel.app/api/health` every 5 min (create route if missing — this app has only `src/app/my-route/route.ts` example). On pause: Restore → re-run health + save/gallery smoke.
+
+## Vercel Deployment
+
+1. Import same GitHub repo, Next.js defaults, `next build` (`package.json:8`). No `next.config.ts` change needed for Vercel (`output: standalone` is Dockerfile/Coolify only).
+2. Set Environment Contract envs above (Production + Preview), redeploy on change.
+3. No Branddrive `auth-client`/`trustedOrigins` fix applies here — auth is Payload `Users` collection (`src/collections/Users.ts`), not `better-auth`.
+4. Done: `README.md` Live URL points to `https://agentic-qrcodegen.vercel.app/`.
+
+## Verification (every DB/auth/deploy change)
+
+- [ ] `pnpm payload migrate:status` clean on target DIRECT URL
+- [ ] `pnpm lint` + `pnpm build` pass
+- [ ] Local + Vercel `https://agentic-qrcodegen.vercel.app/` home + Generate & Save + gallery + `/admin` login work, R2 images load
+- [ ] Row counts match (if migrated), `payload-migrations` current
+- [ ] `git status` shows no secrets/`*.dump`, `.env` ignored, `tasks.json` deleted after cutover
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `ECONNREFUSED 127.0.0.1:5434` | Start manual `ssh -N -L 5434:...` tunnel (export only) |
+| `must be owner` on restore | Retry with `--no-owner --no-acl` |
+| `already exists` on retry | Use `--clean --if-exists` or wipe `public` schema |
+| SSL error to Supabase | Add `?sslmode=require` to `DATABASE_URL`; restores use pooler form as-is |
+| `too many clients` on Vercel | Runtime must be pooler `:6543` |
+| R2 images 403/blank after cutover | `S3_*` not carried over — re-set in Vercel, redeploy |
+| Dead after ~7d idle | Supabase paused → Restore + keep-warm |
+| Payload `relation does not exist` after restore | Forgot `--schema=public` coverage or skipped `payload migrate` — check `payload-migrations` |
 
